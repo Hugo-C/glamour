@@ -179,6 +179,15 @@ func (tr *ANSIRenderer) NewElement(node ast.Node, source []byte) Element {
 	case ast.KindEmphasis:
 		n := node.(*ast.Emphasis)
 		s := string(n.Text(source))
+
+		for c := n.FirstChild(); c != nil; c = c.NextSibling() {
+			switch c.Kind() {
+			case ast.KindAutoLink:
+				autoLinkNode := c.(*ast.AutoLink)
+				s += string(autoLinkNode.URL(source))
+			}
+		}
+
 		style := ctx.options.Styles.Emph
 		if n.Level > 1 {
 			style = ctx.options.Styles.Strong
